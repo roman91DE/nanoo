@@ -3,7 +3,6 @@ use std::io;
 use ratatui::style::Stylize;
 use ratatui::symbols::border;
 use ratatui::text::Line;
-use ratatui::text::Text;
 use ratatui::widgets::Block;
 use ratatui::widgets::Paragraph;
 use ratatui::widgets::Widget;
@@ -61,8 +60,7 @@ impl Editor {
             input::Command::MoveCursorLeft => self.move_cursor_left(),
             input::Command::MoveCursorRight => self.move_cursor_right(),
             input::Command::Save => {
-                self.save_file();
-                ()
+                self.save_file().expect("Error during File saving");
             }
         }
     }
@@ -109,7 +107,7 @@ impl Editor {
 
     fn save_file(&self) -> Result<(), std::io::Error> {
         match &self.filename {
-            Some(name) => file::save_file(&name, &self.buffer),
+            Some(name) => file::save_file(name, &self.buffer),
             None => file::save_file("new.txt", &self.buffer),
         }
     }

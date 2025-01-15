@@ -6,7 +6,7 @@ pub fn load_file(filename: &str) -> Result<Vec<String>, io::Error> {
     Ok(content.lines().map(String::from).collect())
 }
 
-pub fn save_file(filename: &str, buffer: &Vec<String>) -> Result<(), io::Error> {
+pub fn save_file(filename: &str, buffer: &[String]) -> Result<(), io::Error> {
     let content = buffer.join("\n");
     fs::write(filename, content)
 }
