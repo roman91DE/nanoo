@@ -3,7 +3,11 @@
 mod editor;
 use editor::Editor;
 
-fn main() {
-    let mut editor = Editor::default();
+mod terminal;
+
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut editor = Editor::default()?;
     editor.run();
+    Ok(())
 }
