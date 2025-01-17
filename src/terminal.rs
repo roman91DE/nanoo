@@ -1,9 +1,16 @@
-use std::io::{self, stdout, Stdout};
+use std::io::{self, stdout, Stdout, Write};
 
-use crossterm::{cursor::{MoveDown, MoveTo}, execute, terminal::{disable_raw_mode, enable_raw_mode, Clear, ClearType}};
+use crossterm::{
+    cursor::{self, MoveDown, MoveTo},
+    execute, queue,
+    style::Print,
+    terminal::{disable_raw_mode, enable_raw_mode, Clear, ClearType},
+    QueueableCommand,
+};
 
 pub struct Terminal {
-    terminal_size: (u16, u16),
+    col_lim: u16,
+    row_lim: u16,
     stdout: Stdout,
 }
 
@@ -11,7 +18,8 @@ impl Terminal {
     pub fn new() -> Result<Self, io::Error> {
         match crossterm::terminal::size() {
             Ok(size) => Ok(Terminal {
-                terminal_size: size,
+                col_lim: size.0,
+                row_lim: size.1,
                 stdout: stdout(),
             }),
             Err(e) => Err(e),
@@ -27,7 +35,13 @@ impl Terminal {
         disable_raw_mode()
     }
     pub fn clear_screen(&mut self) -> Result<(), std::io::Error> {
-        execute!(self.stdout, Clear(ClearType::All))
+        self.stdout
+            .queue(cursor::Hide)?
+            .queue(Clear(ClearType::All))?
+            .queue(cursor::Show)?;
+
+        self.stdout
+            .flush()
     }
 
     pub fn refresh_screen(&mut self) -> Result<(), std::io::Error> {
@@ -37,13 +51,19 @@ impl Terminal {
     }
 
     pub fn draw_row(&mut self) -> Result<(), std::io::Error> {
-        execute!(self.stdout, MoveTo(0, 0))?;
+        self.stdout
+            .queue(cursor::Hide)?
+            .queue(MoveTo(0, 0))?;
 
-        for _ in 0..self.terminal_size.1 {
-            execute!(self.stdout, MoveDown(1))?;
-            print!("~");
+        for _ in 0..self.row_lim {
+            self.stdout
+                .queue(Print("~\r"))?
+                .queue(MoveDown(1))?;
         }
-        execute!(self.stdout, MoveTo(0, 0))?;
-        Ok(())
+
+        self.stdout
+            .queue(MoveTo(0, 0))?
+            .queue(cursor::Show)?
+            .flush()
     }
 }

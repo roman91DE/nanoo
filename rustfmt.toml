@@ -1,0 +1,8 @@
+# Method chaining settings
+chain_width = 0                  # Always format method chains with one call per line
+newline_style = "Unix"           # Always add a newline for method chains
+
+# Additional options
+use_small_heuristics = "off"       # Avoid special formatting for small items
+max_width = 100                    # Set maximum line width
+reorder_imports = true             # Reorder imports alphabetically

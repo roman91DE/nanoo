@@ -5,41 +5,41 @@ use std::io::{self};
 
 use crate::terminal::Terminal;
 
-
-
 pub struct Editor {
     should_quit: bool,
-    terminal: Terminal
-    
+    terminal: Terminal,
 }
 
 impl Editor {
     pub fn default() -> Result<Self, io::Error> {
-        match Terminal::new()  {
+        match Terminal::new() {
             Ok(terminal) => Ok(Editor {
                 should_quit: false,
-                terminal
+                terminal,
             }),
-            Err(e) => Err(e) 
+            Err(e) => Err(e),
         }
     }
 
     pub fn run(&mut self) {
-        self.terminal.initialize().unwrap();
-        self.terminal.draw_row().unwrap();
+        self.terminal
+            .initialize()
+            .unwrap();
+        self.terminal
+            .draw_row()
+            .unwrap();
         let result = self.repl();
         Terminal::terminate().unwrap();
         result.unwrap();
     }
-
-    
 
     fn repl(&mut self) -> Result<(), std::io::Error> {
         loop {
             let event = read()?;
             self.evaluate_event(&event);
             if self.should_quit {
-                self.terminal.refresh_screen()?;
+                self.terminal
+                    .refresh_screen()?;
                 break;
             }
         }
@@ -47,7 +47,9 @@ impl Editor {
     }
     fn evaluate_event(&mut self, event: &Event) {
         if let Key(KeyEvent {
-            code, modifiers, ..
+            code,
+            modifiers,
+            ..
         }) = event
         {
             match code {
@@ -58,7 +60,6 @@ impl Editor {
             }
         }
     }
-    
 }
 
 // https://flenker.blog/hecto-chapter-3/
