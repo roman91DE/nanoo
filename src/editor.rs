@@ -26,8 +26,13 @@ impl Editor {
             .initialize()
             .unwrap();
         self.terminal
+            .welcome_message()
+            .unwrap();
+        self.terminal
             .draw_row()
             .unwrap();
+        
+
         let result = self.repl();
         Terminal::terminate().unwrap();
         result.unwrap();
